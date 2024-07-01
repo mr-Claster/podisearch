@@ -5,5 +5,8 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface VoiceDetectorService {
+
     List<Word> convertSoundToText(MultipartFile file);
+
+    List<Word> convertSoundToText(byte[] data, String fileExtension);
 }

@@ -1,60 +1,56 @@
 package consciousadnetwork.podisearch.controller;
 
-import consciousadnetwork.podisearch.dto.request.PodcastRequestDto;
 import consciousadnetwork.podisearch.dto.response.PodcastResponseDto;
+import consciousadnetwork.podisearch.dto.response.PodcastSearchResponseDto;
+import consciousadnetwork.podisearch.mapper.ResponseDtoMapper;
 import consciousadnetwork.podisearch.model.Podcast;
+import consciousadnetwork.podisearch.model.User;
 import consciousadnetwork.podisearch.service.PodcastService;
-import consciousadnetwork.podisearch.service.mapper.RequestDtoMapper;
-import consciousadnetwork.podisearch.service.mapper.ResponseDtoMapper;
+import consciousadnetwork.podisearch.service.RatingService;
+import consciousadnetwork.podisearch.service.UserService;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/podcasts")
-public class PodcastController {
+public final class PodcastController {
+
     private final PodcastService podcastService;
+    private final RatingService ratingService;
+    private final UserService userService;
     private final ResponseDtoMapper<PodcastResponseDto, Podcast> podcastResponseDtoMapper;
-    private final RequestDtoMapper<PodcastRequestDto, Podcast> podcastRequestDtoMapper;
 
     public PodcastController(PodcastService podcastService,
+                             RatingService ratingService,
+                             UserService userService,
                              ResponseDtoMapper<PodcastResponseDto, Podcast>
-                                     podcastResponseDtoMapper,
-                             RequestDtoMapper<PodcastRequestDto, Podcast>
-                                     podcastRequestDtoMapper) {
+                                     podcastResponseDtoMapper) {
         this.podcastService = podcastService;
+        this.ratingService = ratingService;
+        this.userService = userService;
         this.podcastResponseDtoMapper = podcastResponseDtoMapper;
-        this.podcastRequestDtoMapper = podcastRequestDtoMapper;
     }
 
     @GetMapping
-    public List<PodcastResponseDto> findPodcastByText(@RequestParam String text) {
-        return podcastService.findByText(text).stream()
-                .map(podcastResponseDtoMapper::mapToDto)
-                .collect(Collectors.toList());
+    public List<PodcastSearchResponseDto> findPodcastsByText(@RequestParam String text) {
+        return podcastService.findByText(text);
     }
 
-    @PostMapping
-    public PodcastResponseDto savePodcast(@ModelAttribute @RequestBody
-                                              PodcastRequestDto requestDto) {
-        return podcastResponseDtoMapper.mapToDto(
-                podcastService.savePodcast(
-                        podcastRequestDtoMapper.mapToModel(requestDto)));
-    }
-
-    @PostMapping("/{id}")
-    public PodcastResponseDto updatePodcast(@PathVariable String id,
-                                            @ModelAttribute PodcastRequestDto requestDto) {
-        Podcast podcast = podcastRequestDtoMapper.mapToModel(requestDto);
-        podcast.setId(id);
-        return podcastResponseDtoMapper.mapToDto(
-                podcastService.savePodcast(podcast));
+    @PostMapping("/{podcastId}/mark")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void markPodcast(@RequestBody byte mark,
+                            @PathVariable String podcastName) {
+        User activeUser = userService.getActiveUser();
+        ratingService.markPodcast(mark, podcastName, activeUser);
     }
 }

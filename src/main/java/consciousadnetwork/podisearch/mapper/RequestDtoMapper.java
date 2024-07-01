@@ -1,5 +1,6 @@
-package consciousadnetwork.podisearch.service.mapper;
+package consciousadnetwork.podisearch.mapper;
 
 public interface RequestDtoMapper<D, T> {
+
     T mapToModel(D dto);
 }

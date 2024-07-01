@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/create-providers-table.sql
+  - include:
+      file: db/changelog/changes/add-providers.sql
+  - include:
+      file: db/changelog/changes/create-users-table.sql
+  - include:
+      file: db/changelog/changes/create-roles-table.sql
+  - include:
+      file: db/changelog/changes/add-roles.sql
+  - include:
+      file: db/changelog/changes/create-users-roles-table.sql
+  - include:
+      file: db/changelog/changes/create-marks-table.sql
+  - include:
+      file: db/changelog/changes/create-marks-users-table.sql

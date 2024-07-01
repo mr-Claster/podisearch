@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
+
     private final UserService userService;
 
     public UserDetailsServiceImpl(UserService userService) {
@@ -18,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userService.getByUsername(username);
+        User user = userService.getByEmail(username);
         return org.springframework.security.core.userdetails.User.withUsername(username)
                 .password(user.getPassword())
                 .roles(user.getRoles().stream()

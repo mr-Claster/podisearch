@@ -6,9 +6,8 @@ import lombok.Data;
 
 @Data
 public class PodcastResponseDto {
-    private String id;
+
     private String title;
     private List<WordResponseDto> words;
-    private String urlToImg;
     private LocalDateTime published;
 }

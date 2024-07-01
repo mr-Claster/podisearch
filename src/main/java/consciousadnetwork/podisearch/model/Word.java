@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class Word {
+
     private String word;
     private double startTime; //sec
     private double endTime; //sec
